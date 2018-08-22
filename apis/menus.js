@@ -83,7 +83,7 @@ menusRouter.put('/:menuId', (req, res, next) => {
             next(err);
         }
         else {
-            db.get(`SELECT * FROM Menu WHERE id = ${this.lastID}`,
+            db.get(`SELECT * FROM Menu WHERE id = ${menuId}`,
             (err, row) => {
                 if (err) {
                     res.status(400).send();
@@ -97,8 +97,8 @@ menusRouter.put('/:menuId', (req, res, next) => {
 });
 
 menusRouter.delete('/:menuId', (req, res, next) => {
-    const menuId = req.body && req.params.menuId;
-    db.get(`SELECT * FROM Menu WHERE id = ${menuId}`,
+    const menuId = req.params.menuId;
+    db.get(`SELECT * FROM MenuItem WHERE menu_id = ${menuId}`,
     (err, row) => {
         if (err) {
             next(err);

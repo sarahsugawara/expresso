@@ -31,7 +31,7 @@ itemsRouter.post('/', (req, res, next) => {
     const inventory = menuItem.inventory;
     const price = menuItem.price;
 
-    console.log(`>>>>>>>> ${pp(menuItem)}`);
+    // console.log(`>>>>>>>> ${pp(menuItem)}`);
 
     db.get(`SELECT * FROM Menu WHERE id = ${menuId}`,
     (err, row) => {
@@ -88,12 +88,12 @@ itemsRouter.param('menuItemId', (req, res, next, menuItemId) => {
 
 itemsRouter.put('/:menuItemId', (req, res, next) => {
     const itemId = req.params.menuItemId;
+    const menuId = req.params.menuId;
     const menuItem = req.body.menuItem;
     const name = menuItem.name;
     const description = menuItem.description || '';
     const inventory = menuItem.inventory;
     const price = menuItem.price;
-    const menuId = menuItem.menuId;
 
     db.get(`SELECT * FROM Menu WHERE id = ${menuId}`,
     (err, row) => {
@@ -107,13 +107,12 @@ itemsRouter.put('/:menuItemId', (req, res, next) => {
         }
     });
 
-    db.run(`UPDATE MenuItem SET name = $name, description = $description, inventory = $inventory, price = $price, menu_id = $menuId WHERE id = $id`,
+    db.run(`UPDATE MenuItem SET name = $name, description = $description, inventory = $inventory, price = $price WHERE id = $id`,
     {
         $name: name,
         $description: description,
         $inventory: inventory,
         $price: price,
-        $menuId: menuId,
         $id: itemId
     },
     function (err) {
@@ -130,7 +129,7 @@ itemsRouter.put('/:menuItemId', (req, res, next) => {
                     res.status(400).send();
                 }
                 else {
-                    res.status(201).send({ menuItem: row });
+                    res.status(200).send({ menuItem: row });
                 }
             });
         }
@@ -139,23 +138,15 @@ itemsRouter.put('/:menuItemId', (req, res, next) => {
 
 itemsRouter.delete('/:menuItemId', (req, res, next) => {
     const itemId = req.params.menuItemId;
-    const menuId = req.params.menuId;
-    db.get(`SELECT * WHERE Menu id = ${menuId}`, 
-    (err, row) => {
-        if (err) {
-            res.status(404).send();
-        }
-        else {
-            db.run(`DELETE FROM MenuItem WHERE id = ${itemId}`,
-            function (err) {
-                if (err) {
-                    next(err);
-                }
-                else {
-                    res.status(204).send();
-                }
-            });
-        }
+    
+    db.run(`DELETE FROM MenuItem WHERE id = ${itemId}`,
+        (err) => {
+            if (err) {
+                next(err);
+            }
+            else {
+                res.status(204).send();
+            }
     });
 });
 
