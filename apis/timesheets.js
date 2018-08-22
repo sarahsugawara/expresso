@@ -33,7 +33,7 @@ timesheetsRouter.post('/', (req, res, next) => {
     const date = timesheet.date;
     const employeeId = req.params.employeeId;
     
-    db.get(`SELECT * FROM Timesheet WHERE id = $employeeId`, 
+    db.get(`SELECT * FROM Employee WHERE id = $employeeId`, 
     {
         $employeeId: employeeId
     },
@@ -45,26 +45,26 @@ timesheetsRouter.post('/', (req, res, next) => {
             if (!hours || !rate || !date || !row) {
                 return res.status(400).send();
             }
-        }
-    });
-    db.run(`INSERT INTO Timesheet (hours, rate, date, employee_id) VALUES ($hours, $rate, $date, $employeeId)`,
-    {
-        $hours: hours,
-        $rate: rate,
-        $date: date,
-        $employeeId: employeeId
-    },
-    function(err) {
-        if (err) {
-            next(err);
-        }
-        else {
-            db.get(`SELECT * FROM Timesheet WHERE id = $id`,
+            db.run(`INSERT INTO Timesheet (hours, rate, date, employee_id) VALUES ($hours, $rate, $date, $employeeId)`,
             {
-                $id: this.lastID
+                $hours: hours,
+                $rate: rate,
+                $date: date,
+                $employeeId: employeeId
             },
-            (err, row) => {
-                res.status(201).send({ timesheet: row });
+            function(err) {
+                if (err) {
+                    next(err);
+                }
+                else {
+                    db.get(`SELECT * FROM Timesheet WHERE id = $id`,
+                    {
+                        $id: this.lastID
+                    },
+                    (err, row) => {
+                        res.status(201).send({ timesheet: row });
+                    });
+                }
             });
         }
     });
@@ -88,17 +88,18 @@ timesheetsRouter.param('timesheetId', (req, res, next, timesheetId) => {
     })
 });
 
+
 timesheetsRouter.put('/:timesheetId', (req, res, next) => {
     const timesheetId = req.params.timesheetId;
     const timesheet = req.body.timesheet;
     const hours = timesheet.hours;
     const rate = timesheet.rate;
     const date = timesheet.date;
-    const employeeId = timesheet.employeeId;
+    const employeeId = req.params.employeeId;
     
-    db.get(`SELECT * FROM Timesheet WHERE id = $timesheetId`, 
+    db.get(`SELECT * FROM Employee WHERE id = $employeeId`, 
     {
-        $timesheetId: timesheetId
+        $employeeId: employeeId
     },
     (err, row) => {
         if (err) {
@@ -108,30 +109,30 @@ timesheetsRouter.put('/:timesheetId', (req, res, next) => {
             if (!hours || !rate || !date || !row) {
                 return res.status(400).send();
             }
-        }
-    });
-    db.run(`UPDATE Timesheet SET hours = $hours, rate = $rate, date = $date, employeeId = $employeeId WHERE id = $id`,
-    {
-        $hours: hours,
-        $rate: rate,
-        $date: date,
-        $employeeId: employeeId,
-        $id: timesheetId
-    },
-    function (err) {
-        if (err) {
-            next(err);
-        }
-        else {
-            db.get(`SELECT * FROM Timesheet WHERE id = $id`, 
+            db.run(`UPDATE Timesheet SET hours = $hours, rate = $rate, date = $date, employee_id = $employeeId WHERE id = $id`,
             {
+                $hours: hours,
+                $rate: rate,
+                $date: date,
+                $employeeId: employeeId,
                 $id: timesheetId
             },
-            (err, row) => {
+            function (err) {
                 if (err) {
-                    res.status(400).send();
+                    next(err);
                 }
-                res.status(200).send({ timesheet: row });
+                else {
+                    db.get(`SELECT * FROM Timesheet WHERE id = $id`, 
+                    {
+                        $id: timesheetId
+                    },
+                    (err, row) => {
+                        if (err) {
+                            res.status(400).send();
+                        }
+                        res.status(200).send({ timesheet: row });
+                    });
+                }
             });
         }
     });

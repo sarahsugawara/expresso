@@ -27,9 +27,11 @@ itemsRouter.post('/', (req, res, next) => {
     const menuId = req.params.menuId;
     const menuItem = req.body.menuItem;
     const name = menuItem.name;
-    const decsription = menuItem.description || '';
+    const description = menuItem.description;
     const inventory = menuItem.inventory;
     const price = menuItem.price;
+
+    console.log(`>>>>>>>> ${pp(menuItem)}`);
 
     db.get(`SELECT * FROM Menu WHERE id = ${menuId}`,
     (err, row) => {
@@ -88,7 +90,7 @@ itemsRouter.put('/:menuItemId', (req, res, next) => {
     const itemId = req.params.menuItemId;
     const menuItem = req.body.menuItem;
     const name = menuItem.name;
-    const decsription = menuItem.description || '';
+    const description = menuItem.description || '';
     const inventory = menuItem.inventory;
     const price = menuItem.price;
     const menuId = menuItem.menuId;
@@ -156,3 +158,5 @@ itemsRouter.delete('/:menuItemId', (req, res, next) => {
         }
     });
 });
+
+module.exports = itemsRouter;

@@ -10,7 +10,7 @@ const itemsRouter = require('./menu-items.js');
 
 menusRouter.use('/:menuId/menu-items', itemsRouter);
 
-menuRouter.get('/', (req, res, next) => {
+menusRouter.get('/', (req, res, next) => {
     db.all("SELECT * FROM Menu",
     (err, rows) => {
         if (err) {
@@ -45,7 +45,7 @@ menusRouter.post('/', (req, res, next) => {
     });
 });
 
-menusRouter.param(':menuId', (req, res, next, menuId) => {
+menusRouter.param('menuId', (req, res, next, menuId) => {
     db.get(`SELECT * FROM Menu WHERE id = ${menuId}`, 
     (err, row) => {
         if (err) {
@@ -88,7 +88,9 @@ menusRouter.put('/:menuId', (req, res, next) => {
                 if (err) {
                     res.status(400).send();
                 }
-                res.status(200).send({ menu: row });
+                else {
+                    res.status(200).send({ menu: row });
+                }
             });
         }
     });

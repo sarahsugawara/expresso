@@ -6,7 +6,7 @@ db.serialize(() => {
     db.run("CREATE TABLE IF NOT EXISTS Employee (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, position TEXT NOT NULL, wage INTEGER NOT NULL, is_current_employee INTEGER  NOT NULL DEFAULT 1);");
     
     //Creating "Timesheet" table
-    db.run("CREATE TABLE IF NOT EXISTS Series (id INTEGER PRIMARY KEY NOT NULL, hours INTEGER NOT NULL, rate INTEGER NOT NULL, date INTEGER NOT NULL, employee_id INTEGER NOT NULL, FOREIGN KEY (employee_id) REFERENCES Employee(id) );");
+    db.run("CREATE TABLE IF NOT EXISTS Timesheet (id INTEGER PRIMARY KEY NOT NULL, hours INTEGER NOT NULL, rate INTEGER NOT NULL, date INTEGER NOT NULL, employee_id INTEGER NOT NULL, FOREIGN KEY (employee_id) REFERENCES Employee(id) );");
 
     //Creating "Menu" table
     db.run("CREATE TABLE IF NOT EXISTS Menu (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL);");
